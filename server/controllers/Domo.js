@@ -3,7 +3,14 @@ const models = require('../models');
 const Domo = models.Domo;
 
 const makerPage = (req, res) => {
-    res.render('app');
+    Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
+        if (err) {
+            console.log(err);
+            return res.status(400).json({ error: 'An error occurred' });
+        }
+
+        return res.render('app', { domos: docs });
+    });
 };
 
 module.exports.makerPage = makerPage;
@@ -27,15 +34,21 @@ const makeDomo = (request, response) => {
 
     const newDomo = new Domo.DomoModel(domoData);
 
-    return newDomo.save((err) => {
-        if (err) {
-            console.log(err);
-            return res.status(400).json({ error: 'An error occurred' });
+    const domoPromise = newDomo.save();
+
+    domoPromise.then(() => res.json({ redirect: '/maker' }));
+
+    domoPromise.catch((err) => {
+        console.log(err);
+        if (err.code === 11000) {
+            return res.status(400).json({ error: 'Domo already exists.' });
         }
 
-        return res.json({ redirect: '/maker' });
+        return res.status(400).json({ error: 'An error occurred' });
     });
+
+    return domoPromise;
 };
 
-
+module.exports.make = makerPage;
 module.exports.make = makeDomo;
