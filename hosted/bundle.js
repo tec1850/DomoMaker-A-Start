@@ -5,7 +5,7 @@ var handleDomo = function handleDomo(e) {
 
   $("#domoMessage").animate({ width: 'hide' }, 350);
 
-  if ($("#domoName").val() == '' || $("#domoAge").val() == '') {
+  if ($("#domoName").val() == '' || $("#domoAge").val() == '' || $("#domoSize").val() == '') {
     handleError("RAWR! All fields required");
     return false;
   }
@@ -31,21 +31,31 @@ var DomoForm = function DomoForm(props) {
         method: "POST",
         className: "domoForm"
       },
+
       React.createElement(
         "label",
         { htmlFor: "name" },
         "Name: "
       ),
       React.createElement("input", { id: "domoName", type: "text", name: "name", placeholder: "Domo Name" }),
+
       React.createElement(
         "label",
         { htmlFor: "age" },
         "Age: "
       ),
       React.createElement("input", { id: "domoAge", type: "text", name: "age", placeholder: "Domo Age" }),
+
+      React.createElement(
+        "label",
+        { htmlFor: "size" },
+        "Size: "
+      ),
+      React.createElement("input", { id: "domoSize", type: "text", name: "size", placeholder: "Domo Size" }),
+
       React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
       React.createElement("input", { className: "makeDomoSubmit", type: "submit", value: "Make Domo" })
-    )
+    ),
   );
 };
 
@@ -60,7 +70,7 @@ var DomoList = function DomoList(props) {
         "No Domos yet"
       )
     );
-  };
+  }
 
   var domoNodes = props.domos.map(function (domo) {
     return React.createElement(
@@ -81,6 +91,13 @@ var DomoList = function DomoList(props) {
         domo.age,
         " "
       ),
+      React.createElement(
+        "h3",
+        { className: "domoSize" },
+        " Size: ",
+        domo.size,
+        " "
+      ),
     );
   });
 
@@ -99,7 +116,9 @@ var loadDomosFromServer = function loadDomosFromServer() {
 
 var setup = function setup(csrf) {
   ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector("#makeDomo"));
+
   ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector("#domos"));
+
   loadDomosFromServer();
 };
 

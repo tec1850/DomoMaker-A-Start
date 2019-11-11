@@ -9,26 +9,25 @@ const makerPage = (req, res) => {
         error: 'An error occured!',
       });
     }
-
     return res.render('app', { csrfToken: req.csrfToken(), domos: docs });
   });
 };
 
 const makeDomo = (req, res) => {
-  if (!req.body.name || !req.body.age) {
+  if (!req.body.name || !req.body.age || !req.body.size) {
     return res.status(400).json({
-      error: 'RAWR! Name and age are required.',
+      error: 'RAWR! Name, age and size are required.',
     });
   }
 
   const domoData = {
     name: req.body.name,
     age: req.body.age,
+    size: req.body.size,
     owner: req.session.account._id,
   };
 
   const newDomo = new Domo.DomoModel(domoData);
-
   const domoPromise = newDomo.save();
 
   domoPromise.then(() => res.json({
